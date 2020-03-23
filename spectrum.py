@@ -1,0 +1,68 @@
+class Spectrum:
+    title: str
+    pepmass: float
+    charge: int
+    scans: str
+    rt: float
+    mz_list: list
+    intensity_list: list
+    def __init__(self, title, pepmass, charge, scans, rt, mz_list, intesity_list):
+        self.title = title
+        self.pepmass = pepmass
+        self.charge = charge
+        self.scans = scans
+        self.rt = rt
+        self.mz_list = mz_list
+        self.intensity_list = intesity_list
+    def __repr__(self):
+        return "Title:%s\nPepmass:%s\nCharge:%s\nScans:%s\nRT:%s" % (self.title, self.pepmass, self.charge, self.scans, self.rt)
+
+class Spectra:
+    def __init__(self, file_name):
+        self.spectra = self.read_mgf(file_name)
+
+    def __getitem__(self, item):
+        return self.spectra[item]
+
+    def read_mgf(self, file_name):
+        fr = open(file_name, 'r')
+        l = fr.readline()
+        spectra = []
+        flag = False
+        while(l):
+            if l.startswith("BEGIN IONS"):
+                title = ""
+                pepmass = 0
+                charge = 0
+                scans = 0
+                rt = 0
+                mz_list = []
+                intensity_list = []
+            elif l.startswith("TITLE="):
+                title = l[6:-1]
+            elif l.startswith("PEPMASS="):
+                pepmass = float(l[8:-1])
+            elif l.startswith("CHARGE="):
+                charge = int(l[7:-2])
+            elif l.startswith("SCANS="):
+                scans = l[6:-1]
+            elif l.startswith("RTINSECONDS="):
+                rt = l[11:-1]
+                flag = True
+            elif l.startswith("END IONS"):
+                spectra.append(Spectrum(title, pepmass, charge, scans, rt, mz_list, intensity_list))
+                flag = False
+            elif flag:
+                array = l[:-1].split(' ')
+                mass, intensity = float(array[0]), float(array[1])
+                mz_list.append(mass)
+                intensity_list.append(intensity)
+            l = fr.readline()
+        return spectra
+
+if __name__ == '__main__':
+    spectra = Spectra("test.mgf")
+    s = spectra[-1]
+    print(s)
+    print(len(s.mz_list), s.mz_list)
+    print(len(s.intensity_list), s.intensity_list)
