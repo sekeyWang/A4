@@ -22,10 +22,19 @@ mass_AA = {'A': 71.03711,  # 0
            'V': 99.06841,  # 19
            }
 
+def mass_peptide(peptide):
+    mass = 0
+    for AA in peptide:
+        mass += mass_AA[AA]
+    return mass
+
 def cal_ppm(mass1, mass2):
     return abs(mass1 - mass2)*1e6 / mass2
 
-def find_peptide(sequence, theo_mass, ppm):
+def cal_mass_tol(mass1, mass2):
+    return abs(mass1 - mass2)
+
+def find_peptide(sequence, theo_mass, mass_tol):
     L = len(sequence)
     en = 0
     current_mass = mass_AA[sequence[0]]
@@ -34,22 +43,26 @@ def find_peptide(sequence, theo_mass, ppm):
         while(en < L - 1 and current_mass < theo_mass):
             en += 1
             current_mass += mass_AA[sequence[en]]
-        if cal_ppm(current_mass - mass_AA[sequence[en]], theo_mass) < ppm:
+        if cal_mass_tol(current_mass - mass_AA[sequence[en]], theo_mass) < mass_tol:
             peptide_list.append(sequence[st : en])
-        if cal_ppm(current_mass, theo_mass) < ppm:
+        if cal_mass_tol(current_mass, theo_mass) < mass_tol:
             peptide_list.append(sequence[st : en+1])
         current_mass -= mass_AA[sequence[st]]
-    print(sequence, peptide_list)
+#    print(sequence, peptide_list)
     return peptide_list
+
 
 def find_candidate(database:Database, spectrum:Spectrum):
     theo_mass = spectrum.pepmass * spectrum.charge - 1.0073 * spectrum.charge - 18.0105
-    ppm = 800
+    mass_error = 0.1
     candidate = []
     for protein in database:
-        candidate.append(find_peptide(protein.peptide, theo_mass, ppm))
+        candidate = candidate + find_peptide(protein.peptide, theo_mass, mass_error)
+#    for seq in candidate:
+#        print(seq, round(mass_peptide(seq) - theo_mass, 3))
+    return candidate
 
 if __name__ == '__main__':
     database = Database("ups.fasta")
     spectra = Spectra("test.mgf")
-    find_candidate(database, spectra[0])
+    find_candidate(database, spectra[61])
