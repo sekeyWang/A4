@@ -1,33 +1,52 @@
 class Protein:
-    def __init__(self, name, peptide):
+    def __init__(self, name, sequence):
         self.name = name
-        self.peptide = peptide
+        self.sequence = sequence
     def __repr__(self):
-        return "Name:%s\nPeptide:%s" % (self.name, self.peptide)
+        return "Name:%s\nPeptide:%s" % (self.name, self.sequence)
+
 
 class Database:
     def __init__(self, file_name):
         self.database = self.read_fasta(file_name)
+
     def __getitem__(self, item):
         return self.database[item]
 
     def read_fasta(self, file_name):
         fr = open(file_name, 'r')
         l = fr.readline()
-        name, peptide = "", ""
+        name, protein = "", ""
         database = []
 
         while(l):
             if (l.startswith('>')):
                 if name != "":
-                    database.append(Protein(name, peptide))
-                name = l[:min(11,len(l))]
-                peptide = ""
+                    peptide_list = self.trypsin_cut(protein)
+                    for peptide in peptide_list:
+                        database.append(Protein(name, peptide))
+                name = l[:min(10,len(l))]
+                protein = ""
             else:
-                peptide += l[:-1]
+                protein += l[:-1]
             l = fr.readline()
-        database.append(Protein(name, peptide))
+        peptide_list = self.trypsin_cut(protein)
+        for peptide in peptide_list:
+            database.append(Protein(name, peptide))
         return database
+
+    def trypsin_cut(self, protein):
+        peptide_list = []
+        peptide = ""
+        for idx, aa in enumerate(protein):
+            peptide += aa
+            if aa == 'R' or aa == 'K':
+                if idx + 1 < len(protein) and protein[idx + 1] != 'P':
+                    peptide_list.append(peptide)
+                    peptide = ""
+        return peptide_list
+
 if __name__ == '__main__':
     database = Database("ups.fasta")
-    print(database[50])
+    for peptide in database:
+        print(peptide)
