@@ -26,18 +26,12 @@ class Spectra:
 
     def read_mgf(self, file_name):
         fr = open(file_name, 'r')
-        l = fr.readline()
         spectra = []
         flag = False
-        while(l):
+        title, pepmass, charge, scans, rt, mz_list, intensity_list = "", 0, 0, 0, 0, [], []
+        for l in fr.readlines():
             if l.startswith("BEGIN IONS"):
-                title = ""
-                pepmass = 0
-                charge = 0
-                scans = 0
-                rt = 0
-                mz_list = []
-                intensity_list = []
+                title, pepmass, charge, scans, rt, mz_list, intensity_list = "", 0, 0, 0, 0, [], []
             elif l.startswith("TITLE="):
                 title = l[6:-1]
             elif l.startswith("PEPMASS="):
@@ -57,7 +51,6 @@ class Spectra:
                 mass, intensity = float(array[0]), float(array[1])
                 mz_list.append(mass)
                 intensity_list.append(intensity)
-            l = fr.readline()
         return spectra
 
 if __name__ == '__main__':

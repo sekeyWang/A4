@@ -60,7 +60,7 @@ def match_score(peptide, spectrum:Spectrum):
     score_b2 = ion_match_score(b2, spectrum)
     score_y1 = ion_match_score(y1, spectrum)
     score_y2 = ion_match_score(y2, spectrum)
-    return score_b1 + score_y1
+    return score_y1
 
 
 if __name__ == '__main__':
