@@ -1,11 +1,11 @@
 from database import Database
-from spectrum import Spectra, Spectrum
+from spectrum import Spectra
 from candidate import find_candidate
 from score import match_score
 import sys
 
 
-def search(database_name = "ups.fasta", spectra_name = "test.mgf"):
+def search(database_name, spectra_name):
     database = Database(database_name)
     spectra = Spectra(spectra_name)
     result = []
@@ -44,10 +44,12 @@ def write_result(result, output_file = "out.csv"):
             writer.write(row)
 
 
-if __name__ == '__main__':
-#    database_name, spectra_name, output_file = sys.argv[1], sys.argv[2], sys.argv[3]
-    database_name, spectra_name, output_file = "ups_decoy.fasta", "test.mgf", "out.csv"
+def main(spectra_name, database_name, output_file):
     result = search(database_name, spectra_name)
     result = sorted(result, key=lambda t:t["score"], reverse=True)
-#    print(result[0], result[1])
     write_result(result, output_file)
+
+
+if __name__ == '__main__':
+    spectra_name, database_name, output_file = sys.argv[1], sys.argv[2], sys.argv[3]
+    main(spectra_name, database_name, output_file)

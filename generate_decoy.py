@@ -18,4 +18,4 @@ def generate_decoy(input_name, output_name):
 
 
 if __name__ == '__main__':
-    generate_decoy("ups.fasta", "ups_decoy.fasta")
+    generate_decoy("data/ups.fasta", "data/ups_decoy.fasta")

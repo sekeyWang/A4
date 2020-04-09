@@ -1,3 +1,6 @@
+from search import main
+
+
 def measure_result(file_name):
     with open(file_name, 'r') as fr:
         decoy, target, max_n = 0, 0, 0
@@ -13,4 +16,6 @@ def measure_result(file_name):
 
 
 if __name__ == '__main__':
-    print(measure_result("out.csv"))
+    spectra_name, database_name, output_file = "data/test.mgf", "data/ups_decoy.fasta", "data/out.csv"
+    main(spectra_name, database_name, output_file)
+    print(measure_result(output_file))

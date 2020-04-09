@@ -54,7 +54,7 @@ class Spectra:
         return spectra
 
 if __name__ == '__main__':
-    spectra = Spectra("test.mgf")
+    spectra = Spectra("../data/test.mgf")
     s = spectra[-1]
     print(s)
     print(len(s.mz_list), s.mz_list)

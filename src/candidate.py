@@ -17,8 +17,8 @@ def find_candidate(database:Database, spectrum:Spectrum):
 
 
 if __name__ == '__main__':
-    database = Database("ups.fasta")
-    spectra = Spectra("test.mgf")
+    database = Database("../data/ups.fasta")
+    spectra = Spectra("../data/test.mgf")
 
 #    print(find_candidate(database, spectra[10]))
     match = 0

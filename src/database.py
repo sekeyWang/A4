@@ -76,6 +76,6 @@ class Database:
         return peptide_list
 
 if __name__ == '__main__':
-    database = Database("ups_decoy.fasta")
+    database = Database("../data/ups_decoy.fasta")
     for peptide in database:
         print(peptide)
