@@ -1,6 +1,5 @@
 from database import Database
 from spectrum import Spectra
-from candidate import find_candidate
 from score import match_score
 import sys
 
@@ -11,7 +10,7 @@ def search(database_name, spectra_name):
     result = []
     for id, spectrum in enumerate(spectra):
 #        print(spectrum.title)
-        peptide_list = find_candidate(database, spectrum)
+        peptide_list = spectrum.find_candidate(database)
         if len(peptide_list) == 0:
             continue
         max_score = 0

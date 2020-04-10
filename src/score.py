@@ -1,6 +1,5 @@
 from database import Database
 from spectrum import Spectra, Spectrum
-from candidate import find_candidate
 import config
 from math import log
 
@@ -72,6 +71,6 @@ if __name__ == '__main__':
     spectra = Spectra("../data/test.mgf")
     for test_spectrum in spectra:
         print(test_spectrum.title)
-        peptide_list = find_candidate(database, test_spectrum)
+        peptide_list = test_spectrum.find_candidate(database)
         for peptide in peptide_list:
             print(peptide.sequence, match_score(peptide, test_spectrum))

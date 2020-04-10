@@ -1,4 +1,4 @@
-from search import main
+from src.search import main
 
 
 def measure_result(file_name):

@@ -1,3 +1,7 @@
+from database import Database
+import config
+
+
 class Spectrum:
     title: str
     pepmass: float
@@ -6,6 +10,7 @@ class Spectrum:
     rt: float
     mz_list: list
     intensity_list: list
+
     def __init__(self, title, pepmass, charge, scans, rt, mz_list, intesity_list):
         self.title = title
         self.pepmass = pepmass
@@ -14,8 +19,19 @@ class Spectrum:
         self.rt = rt
         self.mz_list = mz_list
         self.intensity_list = intesity_list
+
     def __repr__(self):
         return "Title:%s\nPepmass:%s\nCharge:%s\nScans:%s\nRT:%s" % (self.title, self.pepmass, self.charge, self.scans, self.rt)
+
+    def find_candidate(self, database: Database):
+        theo_mass = self.pepmass * self.charge - config.mass_z * self.charge - config.mass_H2O
+        mass_error = config.precursor_mass_tol
+        candidate = []
+        for peptide in database:
+            if config.cal_mass_tol(config.mass_peptide(peptide.sequence), theo_mass) < mass_error * config.mass_z:
+                candidate.append(peptide)
+        return candidate
+
 
 class Spectra:
     def __init__(self, file_name):

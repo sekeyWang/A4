@@ -1,5 +1,5 @@
 import random
-from database import Fasta
+from src.database import Fasta
 
 
 def generate_decoy(input_name, output_name):
