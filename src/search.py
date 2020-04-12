@@ -13,7 +13,7 @@ def search(database_name, spectra_name):
         peptide_list = spectrum.find_candidate(database)
         if len(peptide_list) == 0:
             continue
-        max_score = 0
+        max_score = -1000000
         best_peptide = peptide_list[0]
         for peptide in peptide_list:
             score = match_score(peptide, spectrum)

@@ -16,6 +16,6 @@ def measure_result(file_name):
 
 
 if __name__ == '__main__':
-    spectra_name, database_name, output_file = "data/test.mgf", "data/ups_decoy.fasta", "data/out.csv"
+    spectra_name, database_name, output_file = "data/test.mgf", "data/ups_decoy.fasta", "data/out.txt"
     main(spectra_name, database_name, output_file)
     print(measure_result(output_file))

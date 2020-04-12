@@ -1,8 +1,8 @@
+from math import log10 as log
 from database import Database
 from spectrum import Spectra, Spectrum
 import config
-from math import log
-
+import statistics
 
 def theo_ion_mass(peptide, ion, z):
     l = len(peptide)
@@ -30,40 +30,50 @@ def ion_match_score(mass_list, spectrum:Spectrum):
     idx = 0
     l = len(mz_list)
     score_list = []
+#    filter = sorted(spectrum.intensity_list, reverse=True)[int(0.5*len(spectrum.intensity_list))]
+#    filter = min(filter, statistics.mean(spectrum.intensity_list) + statistics.stdev(spectrum.intensity_list) * 2)
+    filter = 0.01 * max(spectrum.intensity_list)
     for ion_mass in mass_list:
         while idx < l - 1 and mz_list[idx] < ion_mass: idx += 1
-        if mz_list[idx] - ion_mass < 0:
-            continue
-        if ion_mass - mz_list[idx - 1] < 0:
-            continue
         peak_idx = idx
-        if mz_list[idx] - ion_mass > ion_mass - mz_list[idx - 1]:
+        if idx > 0 and mz_list[idx] - ion_mass > ion_mass - mz_list[idx - 1]:
             peak_idx = idx - 1
 
         peak_mz = mz_list[peak_idx]
         score = 0
         if abs(peak_mz - ion_mass) < config.fragment_mass_tol:
             peak_it = it_list[peak_idx]
-            score = log(peak_it * 100)
+            if peak_it > filter:
+                score = log(peak_it * 100)
         score_list.append(score)
-    return normalization(score_list)
-
-
-def normalization(score_list):
-    score_list = [min(x, 10) / 10 for x in score_list]
     return score_list
+
+
+def llr_score(score_list, p, q):
+    score = 0
+    for x in score_list:
+        if x > 0:
+            score += log(p / q) * x
+        else:
+            score += log((1 - p) / (1 - q))
+    return score
+
 
 def match_score(peptide, spectrum:Spectrum):
     b1 = theo_ion_mass(peptide.sequence, 'b', 1)
-    b2 = theo_ion_mass(peptide.sequence, 'b', 2)
+#    b2 = theo_ion_mass(peptide.sequence, 'b', 2)
     y1 = theo_ion_mass(peptide.sequence, 'y', 1)
-    y2 = theo_ion_mass(peptide.sequence, 'y', 2)
+#    y2 = theo_ion_mass(peptide.sequence, 'y', 2)
     score_b1 = ion_match_score(b1, spectrum)
-    score_b2 = ion_match_score(b2, spectrum)
+#   score_b2 = ion_match_score(b2, spectrum)
     score_y1 = ion_match_score(y1, spectrum)
-    score_y2 = ion_match_score(y2, spectrum)
-    print(spectrum.title[6:], peptide, score_y1)
-    return sum(score_y1)
+#    score_y2 = ion_match_score(y2, spectrum)
+
+#    score = llr_score(score_y1, config.yp, config.yq) + llr_score(score_b1, config.bp, config.bq)
+    score = sum(score_y1)
+#    print(spectrum.title[6:], peptide, score_y1, score)
+    return score
+
 
 
 if __name__ == '__main__':

@@ -38,3 +38,9 @@ def cal_ppm(mass1, mass2):
 
 def cal_mass_tol(mass1, mass2):
     return abs(mass1 - mass2)
+
+
+yp=0.55777
+yq=0.29654
+bp=0.49171
+bq=0.31189
